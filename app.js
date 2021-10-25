@@ -6,6 +6,7 @@ require('dotenv').config();
 const authRoute = require('./routes/auth');
 
 const app = express();
+app.use(morgan('dev'));
 
 app.get('/', async (req, res) => {
   await res.status(200).json({
