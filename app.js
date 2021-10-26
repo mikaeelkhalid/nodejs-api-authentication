@@ -7,6 +7,8 @@ const authRoute = require('./routes/auth.route');
 
 const app = express();
 app.use(morgan('dev'));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.get('/', async (req, res) => {
   await res.status(200).json({
