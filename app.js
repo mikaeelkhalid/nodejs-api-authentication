@@ -3,7 +3,7 @@ const morgan = require('morgan');
 const createError = require('http-errors');
 require('dotenv').config();
 
-const authRoute = require('./routes/auth');
+const authRoute = require('./routes/auth.route');
 
 const app = express();
 app.use(morgan('dev'));
