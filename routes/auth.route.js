@@ -3,7 +3,7 @@ const router = express.Router();
 const createError = require('http-errors');
 const User = require('../models/user.model');
 const { authSchema } = require('../helpers/validationSchema');
-const { signAccessToken } = require('../helpers/jwtHelper');
+const { signAccessToken, signRefreshToken } = require('../helpers/jwtHelper');
 
 router.post('/register', async (req, res, next) => {
   try {
@@ -21,8 +21,9 @@ router.post('/register', async (req, res, next) => {
 
     const savedUser = await user.save();
     const accessToken = await signAccessToken(savedUser.id);
+    const refreshToken = await signRefreshToken(savedUser.id);
 
-    res.send({ accessToken });
+    res.send({ accessToken, refreshToken });
   } catch (error) {
     if (error.isJoi === true) {
       error.status = 422;
@@ -49,8 +50,9 @@ router.post('/login', async (req, res, next) => {
     }
 
     const accessToken = await signAccessToken(user.id);
+    const refreshToken = await signRefreshToken(user.id);
 
-    res.send({ accessToken });
+    res.send({ accessToken, refreshToken });
   } catch (error) {
     if (error.isJoi === true) {
       next(createError.BadRequest('Invalid credentials'));
