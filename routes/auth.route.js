@@ -9,6 +9,7 @@ const {
   verifyRefreshToken,
 } = require('../helpers/jwtHelper');
 const { verify } = require('jsonwebtoken');
+const client = require('../helpers/initRedis');
 
 router.post('/register', async (req, res, next) => {
   try {
@@ -81,8 +82,27 @@ router.post('/referesh-token', async (req, res, next) => {
   }
 });
 
-router.delete('/logout', async (req, res) => {
-  res.send('logout');
+router.delete('/logout', async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+
+    if (!refreshToken) {
+      throw createError.BadRequest();
+    }
+
+    const userId = await verifyRefreshToken(refreshToken);
+
+    client.del(userId, (err, reply) => {
+      if (err) {
+        console.log(err.message);
+        throw createError.InternalServerError();
+      }
+      console.log(reply);
+      res.sendStatus(204);
+    });
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;

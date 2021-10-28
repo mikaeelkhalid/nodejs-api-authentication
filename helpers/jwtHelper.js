@@ -10,7 +10,7 @@ module.exports = {
       const secret = process.env.ACCESS_TOKEN_SECRET;
 
       const options = {
-        expiresIn: '20s',
+        expiresIn: '60s',
         issuer: 'mikaeelkhalid.github.io',
         audience: userId,
       };
