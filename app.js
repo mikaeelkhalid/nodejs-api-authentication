@@ -5,6 +5,7 @@ require('dotenv').config();
 require('./helpers/initMongodb');
 const authRoute = require('./routes/auth.route');
 const { verifyAccessToken } = require('./helpers/jwtHelper');
+require('./helpers/initRedis');
 
 const app = express();
 app.use(morgan('dev'));
