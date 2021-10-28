@@ -3,7 +3,12 @@ const router = express.Router();
 const createError = require('http-errors');
 const User = require('../models/user.model');
 const { authSchema } = require('../helpers/validationSchema');
-const { signAccessToken, signRefreshToken } = require('../helpers/jwtHelper');
+const {
+  signAccessToken,
+  signRefreshToken,
+  verifyRefreshToken,
+} = require('../helpers/jwtHelper');
+const { verify } = require('jsonwebtoken');
 
 router.post('/register', async (req, res, next) => {
   try {
@@ -61,8 +66,19 @@ router.post('/login', async (req, res, next) => {
   }
 });
 
-router.post('/referesh-token', async (req, res) => {
-  res.send('referesh-token');
+router.post('/referesh-token', async (req, res, next) => {
+  try {
+    const { refreshToken } = req.body;
+    if (!refreshToken) {
+      throw createError.BadRequest();
+    }
+    const userId = await verifyRefreshToken(refreshToken);
+    const accessToken = await signAccessToken(userId);
+    const refToken = await signRefreshToken(userId);
+    res.send({ accessToken, refreshToken: refToken });
+  } catch (error) {
+    next(error);
+  }
 });
 
 router.delete('/logout', async (req, res) => {
