@@ -88,7 +88,18 @@ module.exports = {
             return reject(createError.Unauthorized());
           }
           const userID = payload.aud;
-          resolve(userID);
+          client.get(userID, (err, result) => {
+            if (err) {
+              console.log(err.message);
+              reject(createError.InternalServerError());
+              return;
+            }
+
+            if (refreshToken === result) {
+              return resolve(userID);
+            }
+            reject(createError.Unauthorized());
+          });
         }
       );
     });
